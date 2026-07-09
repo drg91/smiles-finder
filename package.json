@@ -1,0 +1,15 @@
+{
+  "name": "smiles-finder",
+  "version": "1.0.0",
+  "description": "Buscador de vuelos baratos con millas en Smiles Argentina (smiles.com.ar)",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "mock": "SMILES_MOCK=1 node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
