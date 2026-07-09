@@ -17,7 +17,7 @@ const { getApiKey, setApiKey, refreshApiKey } = require('./lib/apikey');
 loadDotEnv();
 
 const PORT = Number(process.env.PORT || 3000);
-const PUBLIC_DIR = path.join(__dirname, 'public');
+const PUBLIC_DIR = path.join(__dirname, 'docs');
 // Concurrencia contra la API de Smiles: bajarla si aparecen muchos 429.
 const CONCURRENCY = Number(process.env.SMILES_CONCURRENCY || 5);
 

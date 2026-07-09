@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: smiles-finder
+    runtime: node
+    plan: free
+    buildCommand: "echo sin build"
+    startCommand: "node server.js"
+    envVars:
+      - key: SMILES_CONCURRENCY
+        value: "4"

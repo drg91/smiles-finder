@@ -11,11 +11,27 @@ Buscador de vuelos baratos con millas en **[smiles.com.ar](https://www.smiles.co
 
 No hace scraping ni necesita tu usuario. Usa la **API REST interna de Smiles** (`api-air-flightsearch-prd.smiles.com.br`) — la misma que llama la web oficial cuando buscás un vuelo — autenticada con la API key **pública** que Smiles embebe en el JavaScript de su frontend. Es el mismo mecanismo que usan Smiles Helper y todos los buscadores de la comunidad. Los precios que devuelve son exactamente los de la web.
 
-## Requisitos
+## Usarla online (sin instalar nada)
 
-- [Node.js](https://nodejs.org) 18 o superior. Nada más (cero dependencias).
+### Opción A: GitHub Pages (recomendada, gratis y siempre encendida)
 
-## Uso
+La app también funciona **100% en el navegador** (el JS llama directo a la API de Smiles), así que se puede servir como sitio estático. Ya está todo configurado; solo hace falta:
+
+1. Hacer el repo **público**: Settings → General → Danger Zone → *Change visibility* (GitHub Pages gratis requiere repo público).
+2. Correr el workflow "Deploy a GitHub Pages": pestaña **Actions** → *Deploy a GitHub Pages* → *Run workflow* (o pushear cualquier cambio). El workflow habilita Pages solo.
+3. Listo: la app queda en **https://drg91.github.io/smiles-finder/**
+
+### Opción B: Render (con servidor, gratis)
+
+Si preferís que las consultas salgan de un servidor (evita cualquier tema de CORS y habilita la auto-renovación de API key):
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/drg91/smiles-finder)
+
+Creás la cuenta gratis con tu GitHub y un click. Ojo: el plan free "duerme" el servicio tras 15 min sin uso (el primer request luego tarda ~1 min en despertar).
+
+## Uso local
+
+Requisito: [Node.js](https://nodejs.org) 18 o superior. Nada más (cero dependencias).
 
 ```bash
 npm start
