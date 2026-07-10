@@ -33,15 +33,28 @@ Se **redespliega solo** con cada push a la rama. Un par de detalles del plan fre
 - El servicio **se duerme tras 15 min sin uso**; la primera visita después tarda ~1 min en despertar.
 - Tiene 512 MB de RAM. La app usa un solo Chromium compartido para todas las búsquedas, así que entra — pero si hacés búsquedas gigantes y ves reinicios, bajá `SMILES_CONCURRENCY` a `3`.
 
+> ⚠️ **Importante: IP de datacenter.** El WAF de Smiles (Akamai) suele bloquear (HTTP 406) las IPs de los hostings cloud como Render, incluso con el navegador headless. Si te pasa, la app te lo dice claro. La solución para mantenerla online es un **proxy residencial** (ver abajo). Corriéndola local no hace falta, porque tu IP es residencial.
+
+### Proxy residencial (para que ande en Render)
+
+Si Render te da 406, enrutá las consultas por una IP residencial. Contratá un proxy residencial (hay servicios con tiers baratos: IPRoyal, Webshare, Bright Data, etc.) y en Render → tu servicio → **Environment** agregá:
+
+```
+SMILES_PROXY = http://usuario:clave@host:puerto
+```
+
+Guardás, Render redeploya, y todas las búsquedas (motor http y navegador) salen por esa IP. Verificá que quedó activo en `https://TU-URL.onrender.com/api/status` (`"proxy": true`).
+
 ### ¿Y GitHub Pages?
 
 En `docs/` queda una versión que corre 100% en el navegador, servible como sitio estático. **Pero Smiles bloquea las llamadas cross-origin (CORS)**, así que en la práctica no puede buscar — sirve solo de demo de la interfaz. Para buscar de verdad usá Render o local.
 
 ## Uso local
 
-Requisito: [Node.js](https://nodejs.org) 18 o superior. Nada más (cero dependencias).
+Requisito: [Node.js](https://nodejs.org) 18 o superior.
 
 ```bash
+npm install
 npm start
 # → abre http://localhost:3000
 ```

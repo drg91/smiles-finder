@@ -11,7 +11,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { searchDay, getBoardingTax, debugSearch, currentEngine } = require('./lib/smiles');
+const { searchDay, getBoardingTax, debugSearch, currentEngine, proxyActive } = require('./lib/smiles');
 const { getApiKey, setApiKey, refreshApiKey } = require('./lib/apikey');
 
 loadDotEnv();
@@ -197,6 +197,7 @@ async function handleStatus(url, res) {
     mock: process.env.SMILES_MOCK === '1',
     concurrency: CONCURRENCY,
     engine: currentEngine(),
+    proxy: proxyActive(),
   });
 }
 
