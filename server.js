@@ -11,7 +11,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { searchDay, getBoardingTax } = require('./lib/smiles');
+const { searchDay, getBoardingTax, debugSearch } = require('./lib/smiles');
 const { getApiKey, setApiKey, refreshApiKey } = require('./lib/apikey');
 
 loadDotEnv();
@@ -35,6 +35,7 @@ const server = http.createServer(async (req, res) => {
   try {
     if (url.pathname === '/api/search-stream') return await handleSearchStream(url, req, res);
     if (url.pathname === '/api/tax') return await handleTax(url, res);
+    if (url.pathname === '/api/debug') return await handleDebug(url, res);
     if (url.pathname === '/api/status') return await handleStatus(url, res);
     return serveStatic(url.pathname, res);
   } catch (err) {
@@ -159,6 +160,25 @@ async function handleTax(url, res) {
     children: clampInt(p.get('children'), 0, 9, 0),
   });
   sendJson(res, 200, tax);
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/debug?origin=EZE&destination=MAD&date=2027-04-06
+// Devuelve la respuesta cruda de Smiles (status, headers, cuerpo) para
+// diagnosticar bloqueos del WAF (406, etc.).
+// ---------------------------------------------------------------------------
+async function handleDebug(url, res) {
+  const p = url.searchParams;
+  const q = {
+    origin: clean(p.get('origin')) || 'EZE',
+    destination: clean(p.get('destination')) || 'MAD',
+    date: /^\d{4}-\d{2}-\d{2}$/.test(p.get('date') || '') ? p.get('date') : futureDate(60),
+  };
+  sendJson(res, 200, await debugSearch(q));
+}
+
+function futureDate(days) {
+  return new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
 }
 
 // ---------------------------------------------------------------------------

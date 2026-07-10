@@ -321,7 +321,10 @@ async function smilesSearchDay(job, retries = 2) {
         lastErr = new Error('Rate limit de Smiles (429)');
         continue;
       }
-      if (!res.ok) throw new Error(`Smiles respondió HTTP ${res.status}`);
+      if (!res.ok) {
+        const snippet = (await res.text().catch(() => '')).replace(/\s+/g, ' ').slice(0, 160);
+        throw new Error(`Smiles respondió HTTP ${res.status}${snippet ? ` — ${snippet}` : ''}`);
+      }
       const data = await res.json();
       return normalizeFlights(data, job);
     } catch (err) {
