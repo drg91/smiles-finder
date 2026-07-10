@@ -11,7 +11,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { searchDay, getBoardingTax, debugSearch } = require('./lib/smiles');
+const { searchDay, getBoardingTax, debugSearch, currentEngine } = require('./lib/smiles');
 const { getApiKey, setApiKey, refreshApiKey } = require('./lib/apikey');
 
 loadDotEnv();
@@ -163,7 +163,7 @@ async function handleTax(url, res) {
 }
 
 // ---------------------------------------------------------------------------
-// GET /api/debug?origin=EZE&destination=MAD&date=2027-04-06
+// GET /api/debug?origin=EZE&destination=MAD&date=2027-04-06&engine=browser
 // Devuelve la respuesta cruda de Smiles (status, headers, cuerpo) para
 // diagnosticar bloqueos del WAF (406, etc.).
 // ---------------------------------------------------------------------------
@@ -174,7 +174,8 @@ async function handleDebug(url, res) {
     destination: clean(p.get('destination')) || 'MAD',
     date: /^\d{4}-\d{2}-\d{2}$/.test(p.get('date') || '') ? p.get('date') : futureDate(60),
   };
-  sendJson(res, 200, await debugSearch(q));
+  const engine = ['http', 'browser'].includes(p.get('engine')) ? p.get('engine') : null;
+  sendJson(res, 200, await debugSearch(q, engine));
 }
 
 function futureDate(days) {
@@ -195,6 +196,7 @@ async function handleStatus(url, res) {
     apiKey: mask(getApiKey()),
     mock: process.env.SMILES_MOCK === '1',
     concurrency: CONCURRENCY,
+    engine: currentEngine(),
   });
 }
 

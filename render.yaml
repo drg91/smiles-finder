@@ -3,8 +3,10 @@ services:
     name: smiles-finder
     runtime: node
     plan: free
-    buildCommand: "echo sin build"
+    buildCommand: "npm install"
     startCommand: "node server.js"
     envVars:
       - key: SMILES_CONCURRENCY
-        value: "4"
+        value: "5"
+      - key: SMILES_ENGINE
+        value: "auto"

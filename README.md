@@ -9,25 +9,33 @@ Buscador de vuelos baratos con millas en **[smiles.com.ar](https://www.smiles.co
 
 ## Cómo se conecta a Smiles
 
-No hace scraping ni necesita tu usuario. Usa la **API REST interna de Smiles** (`api-air-flightsearch-prd.smiles.com.br`) — la misma que llama la web oficial cuando buscás un vuelo — autenticada con la API key **pública** que Smiles embebe en el JavaScript de su frontend. Es el mismo mecanismo que usan Smiles Helper y todos los buscadores de la comunidad. Los precios que devuelve son exactamente los de la web.
+No hace scraping ni necesita tu usuario. Usa la **API REST interna de Smiles** (`api-air-flightsearch-prd.smiles.com.br`) — la misma que llama la web oficial cuando buscás un vuelo — autenticada con la API key **pública** que Smiles embebe en el JavaScript de su frontend. Los precios que devuelve son exactamente los de la web.
 
-## Usarla online (sin instalar nada)
+Smiles protege esa API con **Akamai Bot Manager**, que rechaza (HTTP 406) los requests que no vienen de un navegador real y **no permite llamadas desde otras webs** (CORS). Por eso la app tiene dos motores de transporte y elige solo:
 
-### Opción A: GitHub Pages (recomendada, gratis y siempre encendida)
+- **`http`** — `fetch` de Node, liviano. Funciona cuando el WAF no está estricto.
+- **`browser`** — un **Chromium headless real** (puppeteer-core + `@sparticuz/chromium`) que carga smiles.com.ar, ejecuta el script anti-bot de Akamai, obtiene sus cookies y hace los requests desde el contexto de la página. Indistinguible del sitio real, pasa el WAF.
 
-La app también funciona **100% en el navegador** (el JS llama directo a la API de Smiles), así que se puede servir como sitio estático. Con el repo público, solo hace falta habilitar Pages una vez:
+Con `SMILES_ENGINE=auto` (default) arranca en `http` y, si aparece un 406, **cambia solo a `browser`** para el resto de la sesión.
 
-1. Settings → **Pages** → Build and deployment → Source: **Deploy from a branch**.
-2. Branch: `claude/smiles-flight-search-app-pkswpr`, carpeta `/docs` → **Save**.
-3. En ~1 minuto la app queda en **https://drg91.github.io/smiles-finder/** y se redespliega sola con cada push.
+> Esto necesita un servidor (no corre en un sitio estático puro por el CORS de Akamai). Por eso la forma recomendada de tenerla online es **Render**.
 
-### Opción B: Render (con servidor, gratis)
-
-Si preferís que las consultas salgan de un servidor (evita cualquier tema de CORS y habilita la auto-renovación de API key):
+## Usarla online: Render (gratis)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/drg91/smiles-finder)
 
-Creás la cuenta gratis con tu GitHub y un click. Ojo: el plan free "duerme" el servicio tras 15 min sin uso (el primer request luego tarda ~1 min en despertar).
+1. Clic en el botón → **Sign in with GitHub** (cuenta gratis, sin tarjeta).
+2. Render lee el `render.yaml` del repo y arma el servicio `smiles-finder` solo → **Apply / Deploy**.
+3. En un par de minutos te da tu URL, tipo **`https://smiles-finder-xxxx.onrender.com`**. Esa es tu app.
+
+Se **redespliega solo** con cada push a la rama. Un par de detalles del plan free:
+
+- El servicio **se duerme tras 15 min sin uso**; la primera visita después tarda ~1 min en despertar.
+- Tiene 512 MB de RAM. La app usa un solo Chromium compartido para todas las búsquedas, así que entra — pero si hacés búsquedas gigantes y ves reinicios, bajá `SMILES_CONCURRENCY` a `3`.
+
+### ¿Y GitHub Pages?
+
+En `docs/` queda una versión que corre 100% en el navegador, servible como sitio estático. **Pero Smiles bloquea las llamadas cross-origin (CORS)**, así que en la práctica no puede buscar — sirve solo de demo de la interfaz. Para buscar de verdad usá Render o local.
 
 ## Uso local
 
