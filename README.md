@@ -15,11 +15,11 @@ No hace scraping ni necesita tu usuario. Usa la **API REST interna de Smiles** (
 
 ### Opción A: GitHub Pages (recomendada, gratis y siempre encendida)
 
-La app también funciona **100% en el navegador** (el JS llama directo a la API de Smiles), así que se puede servir como sitio estático. Ya está todo configurado; solo hace falta:
+La app también funciona **100% en el navegador** (el JS llama directo a la API de Smiles), así que se puede servir como sitio estático. Con el repo público, solo hace falta habilitar Pages una vez:
 
-1. Hacer el repo **público**: Settings → General → Danger Zone → *Change visibility* (GitHub Pages gratis requiere repo público).
-2. Correr el workflow "Deploy a GitHub Pages": pestaña **Actions** → *Deploy a GitHub Pages* → *Run workflow* (o pushear cualquier cambio). El workflow habilita Pages solo.
-3. Listo: la app queda en **https://drg91.github.io/smiles-finder/**
+1. Settings → **Pages** → Build and deployment → Source: **Deploy from a branch**.
+2. Branch: `claude/smiles-flight-search-app-pkswpr`, carpeta `/docs` → **Save**.
+3. En ~1 minuto la app queda en **https://drg91.github.io/smiles-finder/** y se redespliega sola con cada push.
 
 ### Opción B: Render (con servidor, gratis)
 

@@ -1,8 +1,8 @@
 name: Deploy a GitHub Pages
 
+# Fallback manual. El deploy normal es automático: Settings → Pages →
+# "Deploy from a branch" → claude/smiles-flight-search-app-pkswpr + /docs.
 on:
-  push:
-    branches: [claude/smiles-flight-search-app-pkswpr]
   workflow_dispatch:
 
 permissions:
