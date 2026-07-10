@@ -198,6 +198,7 @@ async function startStaticSearch(input) {
 
   $('progressText').textContent = `0 / ${jobs.length} búsquedas`;
   let aborted = false;
+  let fatalShown = false;
   searchAbort = () => (aborted = true);
 
   let done = 0;
@@ -215,13 +216,20 @@ async function startStaticSearch(input) {
       } catch (err) {
         errors++;
         addError(`${job.destination} ${job.date}: ${err.message}`);
-        if (err.status === 401 || err.status === 403) {
+        if ((err.status === 401 || err.status === 403) && !fatalShown) {
           aborted = true;
+          fatalShown = true;
           addError('⛔ API key rechazada por Smiles. Pegá una key vigente en el campo "API key" (instrucciones en el README).');
         }
-        if (err.cors) {
+        if (err.cors && !fatalShown) {
           aborted = true;
-          addError('⛔ El navegador bloqueó la llamada a Smiles (CORS) o no hay conexión. Usá la versión con servidor: npm start o Render (ver README).');
+          fatalShown = true;
+          addError(
+            '⛔ Smiles bloquea las búsquedas desde el navegador (CORS). Usá la versión con servidor: ' +
+              '<a href="https://render.com/deploy?repo=https://github.com/drg91/smiles-finder" target="_blank" rel="noopener">desplegala gratis en Render</a> ' +
+              'o corré <code>npm start</code> local (<a href="https://github.com/drg91/smiles-finder#readme" target="_blank" rel="noopener">README</a>).',
+            true
+          );
         }
       } finally {
         done++;
@@ -394,10 +402,15 @@ function setProgress(done, total, errors) {
     `${done} / ${total} búsquedas · ${allFlights.length} vuelos` + (errors ? ` · ${errors} errores` : '');
 }
 
-function addError(msg) {
+function addError(msg, isHtml = false) {
   $('errors').hidden = false;
   const li = document.createElement('li');
-  li.textContent = msg;
+  if (isHtml) {
+    li.innerHTML = msg;
+    document.querySelector('#errors details').open = true;
+  } else {
+    li.textContent = msg;
+  }
   $('errorsList').appendChild(li);
   $('errorsSummary').textContent = `${$('errorsList').children.length} búsquedas con error (click para ver)`;
 }
